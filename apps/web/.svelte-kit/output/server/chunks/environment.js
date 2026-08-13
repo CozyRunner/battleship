@@ -1,4 +1,4 @@
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/runtime/app/paths/internal/server.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/runtime/app/paths/internal/server.js
 var base = "";
 var assets = base;
 var app_dir = "_app";
@@ -37,7 +37,7 @@ function set_public_env(environment) {
 }
 //#endregion
 //#region \0virtual:__sveltekit/environment
-var version = "1778132668770";
+var version = "1786602455751";
 var prerendering = false;
 function set_building() {}
 function set_prerendering() {

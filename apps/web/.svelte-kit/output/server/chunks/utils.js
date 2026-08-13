@@ -1,10 +1,9 @@
-import { d as coalesce_to_error, f as get_message, p as get_status } from "./shared.js";
+import { d as coalesce_to_error, f as get_message, p as get_status, y as parse } from "./shared.js";
 import "./environment.js";
 import { json, text } from "@sveltejs/kit";
 import { HttpError, SvelteKitError } from "@sveltejs/kit/internal";
 import { with_request_store } from "@sveltejs/kit/internal/server";
-import * as devalue from "devalue";
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/constants.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/constants.js
 /**
 * A fake asset path used in `vite dev` and `vite preview`, so that we can
 * serve local assets while verifying that requests are correctly prefixed
@@ -31,7 +30,7 @@ var PAGE_METHODS = [
 	"HEAD"
 ];
 //#endregion
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/runtime/form-utils.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/runtime/form-utils.js
 /** @import { RemoteForm } from '@sveltejs/kit' */
 /** @import { BinaryFormMeta, InternalRemoteFormIssue } from 'types' */
 /** @import { StandardSchemaV1 } from '@standard-schema/spec' */
@@ -176,7 +175,7 @@ async function deserialize_binary_form(request) {
 	}
 	/** @type {Array<{ offset: number, size: number }>} */
 	const file_spans = [];
-	const [data, meta] = devalue.parse(decoder.decode(data_buffer), { File: ([name, type, size, last_modified, index]) => {
+	const [data, meta] = parse(decoder.decode(data_buffer), { File: ([name, type, size, last_modified, index]) => {
 		if (typeof name !== "string" || typeof type !== "string" || typeof size !== "number" || typeof last_modified !== "number" || typeof index !== "number") throw deserialize_error("invalid file metadata");
 		let offset = file_offsets[index];
 		if (offset === void 0) throw deserialize_error("duplicate file offset table index");
@@ -591,7 +590,7 @@ function throw_on_old_property_access(instance) {
 	} });
 }
 //#endregion
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/utils/http.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/utils/http.js
 /**
 * Given an Accept header and a list of possible content types, pick
 * the most suitable one to respond with
@@ -647,10 +646,10 @@ function is_form_content_type(request) {
 	return is_content_type(request, "application/x-www-form-urlencoded", "multipart/form-data", "text/plain", BINARY_FORM_CONTENT_TYPE);
 }
 //#endregion
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/utils/misc.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/utils/misc.js
 var s = JSON.stringify;
 //#endregion
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/utils/escape.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/utils/escape.js
 /**
 * When inside a double-quoted attribute value, only `&` and `"` hold special meaning.
 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state
@@ -686,7 +685,7 @@ function escape_html(str, is_attr) {
 	});
 }
 //#endregion
-//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_a2a45dec5c31d8d867b7daf4ed230af6/node_modules/@sveltejs/kit/src/runtime/server/utils.js
+//#region ../../node_modules/.pnpm/@sveltejs+kit@2.59.0_@sveltejs+vite-plugin-svelte@7.0.0_svelte@5.55.5_@typescript-eslin_c0431175b60b5192a050ec453829f404/node_modules/@sveltejs/kit/src/runtime/server/utils.js
 /**
 * @param {Partial<Record<import('types').HttpMethod, any>>} mod
 * @param {import('types').HttpMethod} method

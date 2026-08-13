@@ -5,6 +5,7 @@ Follow these steps to set up the Battleship project for local development.
 ## 1. Prerequisites
 
 Ensure you have the following installed on your machine:
+
 - **Node.js**: Version 18.0 or higher.
 - **npm** or **pnpm**: For package management.
 - **Git**: To clone the repository.
@@ -26,24 +27,27 @@ npm install
 
 ## 4. Environment Configuration
 
-Create a `.env` file in the root directory and add the following:
+For **local multiplayer development**, create a `.env` file in `apps/web` and add:
 
 ```env
-PUBLIC_SOCKET_URL=http://localhost:3000
-PORT=3000
-NODE_ENV=development
+VITE_SOCKET_URL=http://localhost:3000
 ```
+
+Without it, the client connects same-origin at `/api/socket/socket.io` (the production Vercel path).
 
 ## 5. Running the Application
 
-### Start the Backend (Server)
+### Start the Frontend (Client)
+
 ```bash
-npm run dev:server
+pnpm dev
 ```
 
-### Start the Frontend (Client)
+### Start the Socket.IO Server (local multiplayer only)
+
 ```bash
-npm run dev:client
+cd apps/web
+pnpm dev:socket
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser to view the application.

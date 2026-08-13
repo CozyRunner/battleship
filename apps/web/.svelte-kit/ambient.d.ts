@@ -43,14 +43,8 @@ declare module '$env/static/private' {
 	export const COLORTERM: string;
 	export const TURBO_INVOCATION_DIR: string;
 	export const COREPACK_ENABLE_DOWNLOAD_PROMPT: string;
-	export const npm_config_npm_globalconfig: string;
 	export const NODE: string;
-	export const npm_config_verify_deps_before_run: string;
-	export const npm_config__jsr_registry: string;
-	export const npm_config_globalconfig: string;
 	export const PWD: string;
-	export const PNPM_HOME: string;
-	export const npm_config_store_dir: string;
 	export const HOME: string;
 	export const COREPACK_ROOT: string;
 	export const LANG: string;
@@ -62,7 +56,6 @@ declare module '$env/static/private' {
 	export const TERM: string;
 	export const npm_package_name: string;
 	export const USER: string;
-	export const npm_config_frozen_lockfile: string;
 	export const DISPLAY: string;
 	export const npm_lifecycle_event: string;
 	export const SHLVL: string;
@@ -75,9 +68,7 @@ declare module '$env/static/private' {
 	export const PATH: string;
 	export const npm_config_node_gyp: string;
 	export const DBUS_SESSION_BUS_ADDRESS: string;
-	export const npm_config_registry: string;
 	export const npm_node_execpath: string;
-	export const npm_config_engine_strict: string;
 	export const NODE_ENV: string;
 }
 
@@ -170,14 +161,8 @@ declare module '$env/dynamic/private' {
 		COLORTERM: string;
 		TURBO_INVOCATION_DIR: string;
 		COREPACK_ENABLE_DOWNLOAD_PROMPT: string;
-		npm_config_npm_globalconfig: string;
 		NODE: string;
-		npm_config_verify_deps_before_run: string;
-		npm_config__jsr_registry: string;
-		npm_config_globalconfig: string;
 		PWD: string;
-		PNPM_HOME: string;
-		npm_config_store_dir: string;
 		HOME: string;
 		COREPACK_ROOT: string;
 		LANG: string;
@@ -189,7 +174,6 @@ declare module '$env/dynamic/private' {
 		TERM: string;
 		npm_package_name: string;
 		USER: string;
-		npm_config_frozen_lockfile: string;
 		DISPLAY: string;
 		npm_lifecycle_event: string;
 		SHLVL: string;
@@ -202,9 +186,7 @@ declare module '$env/dynamic/private' {
 		PATH: string;
 		npm_config_node_gyp: string;
 		DBUS_SESSION_BUS_ADDRESS: string;
-		npm_config_registry: string;
 		npm_node_execpath: string;
-		npm_config_engine_strict: string;
 		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;

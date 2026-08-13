@@ -16,7 +16,7 @@ Ensure you have the following tools installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/sachinksamad1/battleship.git
+git clone https://github.com/CozyRunner/battleship.git
 cd battleship
 ```
 
@@ -43,28 +43,44 @@ pnpm install
 
 ### 4. Running the Development Environment
 
-Start both the frontend and backend servers concurrently:
+Start the SvelteKit frontend:
 
 ```bash
 pnpm dev
 ```
 
 - **Web Frontend:** [http://localhost:5173](http://localhost:5173)
-- **Backend Server:** [http://localhost:3000](http://localhost:3000)
+
+For local multiplayer development, also start the Socket.IO server (the same
+`api/socket.ts` that Vercel runs as a Function):
+
+```bash
+cd apps/web
+pnpm dev:socket        # Socket.IO server on http://localhost:3000
+```
+
+In a separate terminal, point the client at it:
+
+```bash
+VITE_SOCKET_URL=http://localhost:3000 pnpm dev
+```
 
 ## 🧪 Running Tests & Checks
 
 ### Unit Tests
+
 ```bash
 pnpm test
 ```
 
 ### Linting
+
 ```bash
 pnpm lint
 ```
 
 ### Type Checking
+
 ```bash
 pnpm check
 ```
@@ -73,17 +89,16 @@ pnpm check
 
 The project is structured as a monorepo:
 
-- `/apps/web` — Svelte 5 frontend.
-- `/apps/server` — Node.js backend.
+- `/apps/web` — Svelte 5 frontend (contains the Socket.IO server at `api/socket.ts`).
 - `/docs` — Documentation and design files.
 - `/reference` — PRD and API specifications.
 
 ## 🚀 Building for Production
 
-To generate production builds for all applications:
+To generate a production build:
 
 ```bash
 pnpm build
 ```
 
-The outputs will be in `apps/web/.svelte-kit` and `apps/server/dist`.
+The output is in `apps/web/.svelte-kit` (SvelteKit) and `apps/web/.vercel/output` (Vercel adapter).

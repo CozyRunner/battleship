@@ -1,7 +1,7 @@
-import { $ as createContext, G as async_mode_flag, K as getAbortSignal, Q as run, W as get_render_context, Z as noop, ct as experimental_async_required, et as getAllContexts, it as ssr_context, nt as hasContext, ot as hydratable_serialization_failed, rt as setContext, st as lifecycle_function_unavailable, tt as getContext } from "./dev.js";
-import * as devalue from "devalue";
+import { $ as createContext, G as async_mode_flag, K as getAbortSignal, Q as run, W as get_render_context, Z as noop, ct as experimental_async_required, et as getAllContexts, it as ssr_context, lt as uneval, nt as hasContext, ot as hydratable_serialization_failed, rt as setContext, st as lifecycle_function_unavailable, tt as getContext } from "./dev.js";
 //#region \0rolldown/runtime.js
 var __defProp = Object.defineProperty;
+var __commonJSMin = (cb, mod) => () => (mod || (cb((mod = { exports: {} }).exports, mod), cb = null), mod.exports);
 var __exportAll = (all, no_symbols) => {
 	let target = {};
 	for (var name in all) __defProp(target, name, {
@@ -42,7 +42,7 @@ function encode(key, value, unresolved) {
 		serialized: ""
 	};
 	let uid = 1;
-	entry.serialized = devalue.uneval(entry.value, (value, uneval) => {
+	entry.serialized = uneval(entry.value, (value, uneval) => {
 		if (is_promise(value)) {
 			const placeholder = `"${uid++}"`;
 			const p = value.then((v) => {
@@ -142,4 +142,4 @@ function fork() {
 async function tick() {}
 async function settled() {}
 //#endregion
-export { tick as n, hydratable as r, index_server_exports as t };
+export { __commonJSMin as i, tick as n, hydratable as r, index_server_exports as t };

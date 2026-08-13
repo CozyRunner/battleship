@@ -18,7 +18,7 @@ corepack enable
 
 - **Install Dependencies:** `pnpm install`
 - **Add a Package to a specific app:** `pnpm add <package> -F <app-name>`
-  - Example: `pnpm add socket.io -F @battleship/server`
+  - Example: `pnpm add socket.io -F @battleship/web`
 - **Add a Dev Dependency:** `pnpm add -D <package> -F <app-name>`
 - **Update Packages:** `pnpm update`
 
@@ -47,8 +47,7 @@ pnpm build # Runs turbo run build
 
 ## 📂 Workspace Structure
 
-- `apps/web`: `@battleship/web` (SvelteKit)
-- `apps/server`: `@battleship/server` (Node.js)
+- `apps/web`: `@battleship/web` (SvelteKit + Socket.IO Function)
 
 Dependencies are shared via the `pnpm` workspace, but each application maintains its own `package.json` for specific needs.
 

@@ -4,91 +4,93 @@ This document details the hosting strategy, environment configuration, and autom
 
 ## 1. Deployment Architecture
 
-The application is split into two distinct parts for deployment:
+The entire application — frontend and multiplayer backend — deploys to a **single Vercel project**.
 
-### Frontend (Vercel)
-- **Framework**: SvelteKit
-- **Deployment**: [Vercel](https://vercel.com/)
-- **Responsibilities**: Hosting the UI, static assets, and client-side logic.
+### SvelteKit App (Vercel)
 
-### Backend (Railway)
-- **Runtime**: Node.js + Socket.IO
-- **Deployment**: [Railway](https://railway.app/)
-- **Responsibilities**: Managing WebSocket connections and authoritative game engine logic.
+- **Framework**: SvelteKit (`@sveltejs/adapter-vercel`)
+- **Root directory**: `apps/web`
+- **Responsibilities**:
+  - Hosting the UI, static assets, and client-side logic.
+  - Serving the **Socket.IO WebSocket server** as a Vercel Function at `api/socket.ts`.
+
+### Real-time Layer
+
+- **WebSockets**: The Socket.IO server runs inside `api/socket.ts` (a Node.js Vercel Function). Vercel routes `/api/socket` (and its sub-paths) to the function and strips the `/api/socket` prefix before delivery, so Socket.IO keeps its default `/socket.io` path server-side and the client connects to `/api/socket/socket.io`.
+- **Transport**: The client forces `transports: ['websocket']`. Vercel Functions are ephemeral and a single WebSocket connection is pinned to one instance, so HTTP long-polling (which relies on sticky sessions) is not supported.
+- **State**: Room/game state lives in **Redis** (`@socket.io/redis-adapter` pub/sub), so connections pinned to different function instances can still join the same rooms and broadcast to each other. When Redis is unconfigured (local development), an in-memory fallback is used.
+- **Reconnection**: Clients persist their join code + player id and call the `restore` event on reconnect; the function re-attaches the socket to its room and emits `game_restored`.
 
 ## 2. Prerequisites
 
-Before starting the deployment, ensure you have:
-- A [Vercel](https://vercel.com/) account.
-- A [Railway](https://railway.app/) account.
+- A [Vercel](https://vercel.com/) account (WebSockets require the Node.js runtime + [Fluid Compute](https://vercel.com/docs/fluid-compute), on by default for new projects).
+- A Redis instance with Pub/Sub support, e.g. [Upstash Redis from the Vercel Marketplace](https://vercel.com/marketplace/redis) or Redis Cloud.
 - The project repository pushed to a GitHub account.
-- Environment variables ready for configuration.
 
-## 3. Frontend Deployment (Vercel)
+## 3. Deployment (Vercel)
 
-Follow these steps to deploy the web frontend:
+1. **Import Project**: Log in to the Vercel Dashboard and click "Add New" > "Project".
+2. **Connect GitHub**: Select the `battleship` repository.
+3. **Configure Project**:
+   - **Framework Preset**: `SvelteKit` (auto-detected).
+   - **Root Directory**: `apps/web`.
+   - **Build & Output Settings**: Use the default `pnpm run build`; Vercel detects the monorepo and root `pnpm-lock.yaml`.
+4. **Permissions**: WebSocket Functions require the **WebSockets** permission. When WebSockets is not enabled for your project, enable it in **Project Settings** (or during the first deploy, accept the permission prompt).
+5. **Environment Variables** — see the table in [Section 4](#4-environment-variables).
+6. **Deploy**: Click "Deploy".
 
-1.  **Import Project**: Log in to the Vercel Dashboard and click "Add New" > "Project".
-2.  **Connect GitHub**: Select the `battleship` repository from your GitHub list.
-3.  **Configure Project**:
-    -   **Framework Preset**: Select `SvelteKit`.
-    -   **Root Directory**: Set this to `apps/web`.
-    -   **Build & Output Settings**: 
-        -   Vercel should automatically detect the monorepo structure and use `pnpm` (if the lockfile is at the root).
-        -   Ensure the build command is `npm run build` (which runs `vite build` within `apps/web`).
-4.  **Environment Variables**:
-    -   Add `PUBLIC_SOCKET_URL`: This should be the public URL provided by Railway (e.g., `https://battleship-backend.up.railway.app`).
-5.  **Deploy**: Click "Deploy". Vercel will build and host your frontend.
+### Function Configuration
 
-## 4. Backend Deployment (Railway)
+`apps/web/vercel.json` configures the Socket.IO function:
 
-Follow these steps to deploy the server backend:
+```json
+{
+  "functions": {
+    "api/socket.ts": {
+      "maxDuration": 800
+    }
+  }
+}
+```
 
-1.  **New Project**: Log in to Railway and click "New Project" > "Deploy from GitHub repo".
-2.  **Select Repository**: Choose the `battleship` repository.
-3.  **Configure Service**:
-    -   Railway will detect the root `package.json`. You need to point it to the backend service.
-    -   Go to the service **Settings** > **General** > **Root Directory** and set it to `apps/server`.
-    -   Railway will automatically use the `pnpm-lock.yaml` at the root for dependency resolution.
-4.  **Build & Start Commands**:
-    -   Railway usually detects the `start` script. Ensure it's set to `npm run start` (which should run the compiled JS in `dist/`).
-    -   Ensure the Build command is `npm run build`.
--   **Environment Variables**:
-    -   Railway provides a `PORT` variable automatically; ensure your `apps/server/src/index.ts` uses `process.env.PORT`.
-    -   Set `NODE_ENV` to `production`.
--   **Public Domain**: Go to **Settings** > **Networking** and click "Generate Domain" to get the public URL for your backend. This URL must be provided to the Vercel frontend.
+`maxDuration` is set as high as possible because a WebSocket connection is closed when its Vercel Function hits the maximum duration.
 
-## 5. Troubleshooting Railway Deployment
+## 4. Environment Variables
 
-If you encounter errors during the Railway deployment:
+| Variable             | Description                                                                                                                                            | Location              |
+| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------- |
+| `REDIS_URL`          | Redis connection string for room state + pub/sub. `UPSTASH_REDIS_URL` and `KV_URL` are accepted as fallbacks.                                          | Vercel                |
+| `SOCKET_PATH`        | Optional. Socket.IO server path (default `/socket.io`). Only change if a deployment does not strip the `/api/socket` prefix.                           | Vercel                |
+| `CORS_ORIGIN`        | Optional. Allowed origin for Socket.IO (default `*`).                                                                                                  | Vercel                |
+| `VITE_SOCKET_URL`    | Local dev only. Points the client at a standalone socket server (e.g. `http://localhost:3000`). Defaults to the page origin (`/api/socket/socket.io`). | Local `.env`          |
+| `PUBLIC_SOCKET_PATH` | Optional. Overrides the client Socket.IO path (default `/api/socket/socket.io`, or `/socket.io` when `VITE_SOCKET_URL` is set).                        | Vercel / Local `.env` |
 
-### "Missing script: migrate"
-Railway may automatically attempt to run a database migration if it detects a database service in your project. Since this project uses an in-memory game state:
-1.  A dummy `"migrate": "echo 'No migrations to run'"` script has been added to `apps/server/package.json`.
-2.  Alternatively, ensure there are no "Pre-deploy" or "Custom Start" commands in the Railway Dashboard calling `npm run migrate`.
+## 5. Local Development
 
-### "npm warn config production Use --omit=dev instead"
-This is a deprecation warning from `npm` when `NODE_ENV=production` is set. It does not stop the build, but you can ignore it or update the build command in Railway to `npm install --omit=dev && npm run build` if you want to be explicit.
+```bash
+pnpm dev               # frontend on http://localhost:5173
+cd apps/web && pnpm dev:socket   # standalone Socket.IO server on http://localhost:3000
+```
 
-## 6. Environment Variables Overview
+With `VITE_SOCKET_URL=http://localhost:3000 pnpm dev` the client targets the local
+server using the `/socket.io` path. Without it, the client connects same-origin at
+`/api/socket/socket.io`.
 
-| Variable | Description | Location |
-| :--- | :--- | :--- |
-| `PUBLIC_SOCKET_URL` | The public URL of the Railway backend. | Vercel |
-| `PORT` | The port the backend server listens on. | Railway (Auto) |
-| `NODE_ENV` | Environment mode (`production` / `development`). | Both |
+`api/socket.ts` starts listening only when executed directly (`import.meta.main`),
+so Vercel can import it as a Function without side effects.
 
 ## 6. CI/CD Pipeline
 
-We use GitHub Actions for automated quality checks and deployment triggers.
+We use GitHub Actions (`.github/workflows/ci.yml`) for automated quality checks:
 
-### Pipeline Workflow
-1.  **Lint & Type-Check**: `npm run lint` and `tsc`.
-2.  **Test**: `pnpm test`.
-3.  **Build**: Multi-package build via `turbo`.
-4.  **Deploy**: Automatic triggers on `main` branch push.
+1. **Lint**: `pnpm run lint`.
+2. **Type-check**: `pnpm run check` (svelte-check + `tsc -p tsconfig.api.json` for the Function code).
+3. **Test**: `pnpm run test` (Vitest).
+4. **Build**: Multi-package build via `turbo`.
+5. **Deploy**: Vercel auto-deploys on `main` branch pushes.
 
 ### Branching Strategy
--   **main**: Production-ready code. Auto-deploys to production.
--   **develop**: Integration branch for new features.
--   **feature/* / fix/* **: Topic branches for individual tasks.
+
+- **main**: Production-ready code. Auto-deploys to production.
+- **develop**: Integration branch for new features.
+- **feature/_ / fix/_**: Topic branches for individual tasks.

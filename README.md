@@ -31,7 +31,7 @@ This project is managed as a **Turborepo monorepo** using **pnpm** and **vfox**.
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/sachinksamad1/battleship.git
+   git clone https://github.com/CozyRunner/battleship.git
    cd battleship
    ```
 
@@ -44,38 +44,67 @@ This project is managed as a **Turborepo monorepo** using **pnpm** and **vfox**.
 
 ### Running Locally
 
-You can run both the frontend and backend concurrently from the root directory using Turborepo.
+The whole app — frontend and multiplayer backend — lives in `apps/web`. Start the frontend:
 
-1. **Start Development Servers**
+```bash
+pnpm dev
+```
 
-   ```bash
-   pnpm dev
-   ```
+Open `http://localhost:5173`. Single-player AI needs nothing else.
 
-   - **Frontend:** `http://localhost:5173`
-   - **Backend:** `http://localhost:3000`
+For local multiplayer development, also start the Socket.IO server (the same
+`api/socket.ts` that Vercel runs as a Function):
 
-2. **Build the Project**
+```bash
+cd apps/web
+pnpm dev:socket        # Socket.IO server on http://localhost:3000
+```
+
+In a separate terminal the client can target it with:
+
+```bash
+VITE_SOCKET_URL=http://localhost:3000 pnpm dev
+```
+
+Without `VITE_SOCKET_URL` the client connects to the same origin at
+`/api/socket/socket.io` (the production Vercel path).
+
+1. **Build the Project**
 
    ```bash
    pnpm build
    ```
 
-3. **Run Tests**
+2. **Run Tests**
    ```bash
    pnpm test
    ```
 
+## 🚀 Deployment
+
+Everything deploys to a single Vercel project (root directory `apps/web`):
+
+- **Frontend**: SvelteKit static/server rendering.
+- **Backend**: the Socket.IO WebSocket server at `api/socket.ts` (Vercel Function).
+- **State**: room/game state in Redis (e.g. Upstash) with a pub/sub adapter so
+  connections pinned to different function instances still see each other.
+
+See [docs/guides/deployment.md](docs/guides/deployment.md) for the full setup.
+
 ## 📂 Project Structure
 
 - `apps/web`: Svelte 5 frontend application.
-- `apps/server`: Node.js / Socket.IO backend server.
+  - `api/socket.ts`: Socket.IO WebSocket server (Vercel Function).
+  - `src/lib/server/`: Redis-backed room management used by the function.
+  - `src/lib/game/`: Game engine (AI, placement, attack resolution).
+  - `src/lib/socket/`: Socket.IO client.
 - `docs`: Detailed project documentation and task tracking.
 
 ## 🛠️ Tech Stack
 
 - **Frontend:** Svelte 5, TailwindCSS, Vite, Comlink
-- **Backend:** Node.js, Express, Socket.IO
+- **Backend:** Node.js, Express, Socket.IO, Redis
+- **Deployment:** Vercel (Functions + WebSockets)
 - **Monorepo:** Turborepo, pnpm
 - **Testing:** Vitest
 

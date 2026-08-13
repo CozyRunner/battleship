@@ -136,6 +136,8 @@ var enemyStore = createPlayerStore("enemy", "Opponent");
 var socketStore = writable(null);
 writable(null);
 var joinCodeStore = writable(null);
+writable(null);
+typeof window !== "undefined" && window.location.origin;
 function emitAttack(coordinate) {
 	const socket = get(socketStore);
 	if (socket) socket.emit("attack", { coordinate });

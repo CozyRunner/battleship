@@ -68,7 +68,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/sachinksamad1/battleship.git
+   git remote add upstream https://github.com/CozyRunner/battleship.git
    ```
 
 4. **Install dependencies**

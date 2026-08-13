@@ -5,10 +5,11 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"dev:socket": "tsx api/socket.ts",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.api.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
@@ -18,10 +19,12 @@
 	"devDependencies": {
 		"@eslint/compat": "^2.0.4",
 		"@eslint/js": "^10.0.1",
-		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/adapter-vercel": "^6.3.4",
 		"@sveltejs/kit": "^2.57.0",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
 		"@tailwindcss/vite": "^4.2.2",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.6",
 		"@types/howler": "^2.2.12",
 		"@types/node": "^24",
 		"eslint": "^10.2.0",
@@ -34,14 +37,20 @@
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
 		"tailwindcss": "^4.2.2",
+		"tsx": "^4.19.2",
 		"typescript": "^6.0.2",
 		"typescript-eslint": "^8.58.1",
 		"vite": "^8.0.7",
 		"vitest": "^4.1.3"
 	},
 	"dependencies": {
+		"@socket.io/redis-adapter": "^8.3.0",
 		"comlink": "^4.4.2",
+		"cors": "^2.8.6",
+		"express": "^5.2.1",
 		"howler": "^2.2.4",
+		"ioredis": "^5.6.1",
+		"socket.io": "^4.8.3",
 		"socket.io-client": "^4.8.3",
 		"svelte-dnd-action": "^0.9.69"
 	}

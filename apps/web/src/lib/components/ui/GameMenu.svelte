@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { playerStore } from '../../stores/playerStore';
 	import { startSinglePlayerGame } from '../../game/gameController';
-	import { connectSocket, createRoom, joinRoom } from '../../socket/client';
+	import { connectSocket, createRoom, joinRoom, disconnectSocket } from '../../socket/client';
 	import { generateRandomName } from '../../game/utils';
 
 	let playerName = $state(generateRandomName());
@@ -133,7 +133,10 @@
 
 				<button
 					class="w-full pt-2 text-sm font-bold text-slate-400 transition-colors hover:text-white"
-					onclick={() => (mode = 'main')}
+					onclick={() => {
+						disconnectSocket();
+						mode = 'main';
+					}}
 				>
 					← Back to Main Menu
 				</button>
